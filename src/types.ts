@@ -29,7 +29,7 @@ export interface SearchResult {
   models: string[];
 }
 
-const PROFILE_NAME_REGEX = /^[a-z0-9][a-z0-9-]*$/;
+const PROFILE_NAME_REGEX = /^[a-z0-9][a-z0-9.\-]*$/;
 const MAX_NAME_LENGTH = 64;
 
 export function isValidProfileName(name: string): boolean {

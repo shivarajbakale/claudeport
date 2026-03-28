@@ -1,10 +1,12 @@
 import { isValidProfileName, maskApiKey, type Profile, type State, type ClaudeSettings } from './types';
 
 describe('isValidProfileName', () => {
-  it('accepts lowercase alphanumeric with hyphens', () => {
+  it('accepts lowercase alphanumeric with hyphens and dots', () => {
     expect(isValidProfileName('deepseek')).toBe(true);
     expect(isValidProfileName('minimax-m27')).toBe(true);
     expect(isValidProfileName('ollama-local')).toBe(true);
+    expect(isValidProfileName('minimax2.7')).toBe(true);
+    expect(isValidProfileName('qwen3.5-plus')).toBe(true);
   });
 
   it('rejects invalid names', () => {
