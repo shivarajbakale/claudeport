@@ -6,7 +6,7 @@ Claude Code is powerful — but it's even better when you can pick the right mod
 
 ```bash
 # Install
-npm install -g claudeport
+npm install -g @shivarajbakale/claudeport
 
 # Switch to DeepSeek
 claudeport add deepseek
@@ -43,7 +43,7 @@ No lock-in. No commitment. Just pick the right tool for the job.
 ### 1. Install
 
 ```bash
-npm install -g claudeport
+npm install -g @shivarajbakale/claudeport
 ```
 
 Requires Node.js 18+.
@@ -163,7 +163,7 @@ claudeport deepseek   # switch instantly
 ## Uninstall
 
 ```bash
-npm uninstall -g claudeport
+npm uninstall -g @shivarajbakale/claudeport
 ```
 
 Your `~/.claudeport/` directory and original `~/.claude/settings.json` are left intact.
@@ -175,7 +175,7 @@ Your `~/.claudeport/` directory and original `~/.claude/settings.json` are left 
 Contributions welcome! Here's how to set up for development:
 
 ```bash
-git clone https://github.com/YOUR_HANDLE/claudeport.git
+git clone https://github.com/shivarajbakale/claudeport.git
 cd claudeport
 npm install
 npm run build
