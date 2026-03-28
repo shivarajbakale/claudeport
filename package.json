@@ -7,9 +7,6 @@
   "bin": {
     "claudeport": "./bin/claude-switch"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "scripts": {
     "start": "ts-node src/cli.tsx",
     "build": "tsc && node scripts/add-js-extensions.mjs",
