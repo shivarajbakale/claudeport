@@ -2,13 +2,14 @@
   "name": "claude-switcher",
   "version": "1.0.0",
   "description": "CLI tool to switch Claude Code between AI model providers",
+  "type": "module",
   "main": "dist/cli.js",
   "bin": {
     "claude-switch": "./bin/claude-switch"
   },
   "scripts": {
     "start": "ts-node src/cli.tsx",
-    "build": "tsc",
+    "build": "tsc && node scripts/add-js-extensions.mjs",
     "dev": "ts-node-dev --respawn src/cli.tsx",
     "test": "jest",
     "prepublishOnly": "npm run build"
