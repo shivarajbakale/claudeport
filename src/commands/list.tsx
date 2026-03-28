@@ -14,15 +14,26 @@ function ListApp() {
   return (
     <Box flexDirection="column" padding={1}>
       <Text bold color="cyan">Profiles:{'\n'}</Text>
-      {profiles.map(p => (
-        <Text key={p.name}>
-          {p.name === state.activeProfile ? chalk.green('● ') : '○ '}
-          <Text bold>{p.displayName}</Text>
-          <Text dimColor> ({p.name})</Text>
-          <Text dimColor> — {p.env.ANTHROPIC_BASE_URL}</Text>
-          {p.name === state.activeProfile && <Text color="green"> (active)</Text>}
-        </Text>
-      ))}
+      {profiles.map(p => {
+        const opus = p.env.ANTHROPIC_DEFAULT_OPUS_MODEL;
+        const sonnet = p.env.ANTHROPIC_DEFAULT_SONNET_MODEL;
+        const haiku = p.env.ANTHROPIC_DEFAULT_HAIKU_MODEL;
+        const allSame = opus === sonnet && sonnet === haiku;
+        return (
+          <Box key={p.name} flexDirection="column">
+            <Text>
+              {p.name === state.activeProfile ? chalk.green('● ') : '○ '}
+              <Text bold>{p.displayName}</Text>
+              <Text dimColor> ({p.name})</Text>
+              <Text dimColor> — {p.env.ANTHROPIC_BASE_URL}</Text>
+              {p.name === state.activeProfile && <Text color="green"> (active)</Text>}
+            </Text>
+            {!allSame && (
+              <Text dimColor>    opus:{opus} / sonnet:{sonnet} / haiku:{haiku}</Text>
+            )}
+          </Box>
+        );
+      })}
     </Box>
   );
 }

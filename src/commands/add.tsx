@@ -16,7 +16,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 
-type Step = 'name-prompt' | 'select-provider' | 'confirm' | 'api-key' | 'overwrite' | 'switch-now' | 'done';
+type Step = 'name-prompt' | 'select-provider' | 'confirm' | 'tier-prompt' | 'customize-tiers' | 'api-key' | 'overwrite' | 'switch-now' | 'done';
+type TierStep = 'opus' | 'sonnet' | 'haiku';
 
 function AddApp({ initialName }: { initialName?: string }) {
   const [step, setStep] = useState<Step>(initialName ? 'confirm' : 'name-prompt');
@@ -25,6 +26,10 @@ function AddApp({ initialName }: { initialName?: string }) {
   const [selectedModel, setSelectedModel] = useState('');
   const [message, setMessage] = useState('');
   const [inputValue, setInputValue] = useState('');
+  const [opusModel, setOpusModel] = useState('');
+  const [sonnetModel, setSonnetModel] = useState('');
+  const [haikuModel, setHaikuModel] = useState('');
+  const [tierStep, setTierStep] = useState<TierStep>('opus');
 
   useEffect(() => {
     if (step === 'confirm' && name) {
@@ -80,11 +85,81 @@ function AddApp({ initialName }: { initialName?: string }) {
         { label: 'Edit in vim', value: 'vim' },
         { label: 'Pick different provider', value: 'select-provider' },
       ]} onSelect={(item) => {
-        if (item.value === 'continue') { if (!selectedModel) return; setStep('api-key'); }
+        if (item.value === 'continue') { if (!selectedModel) return; setStep('tier-prompt'); }
         else if (item.value === 'vim') { openVim(); }
         else { setStep('select-provider'); }
       }} />
     </Box>);
+  }
+
+  if (step === 'tier-prompt') {
+    const hasTiers = provider && (provider.tierDefaults || provider.models.length > 1);
+    if (!hasTiers) {
+      // Skip tier customization for single-model providers
+      setTimeout(() => setStep('api-key'), 0);
+      return <Box padding={1}><Text dimColor>Setting up...</Text></Box>;
+    }
+    return (<Box flexDirection="column" padding={1}>
+      <Text>Customize model per tier? (Opus = heavy tasks, Sonnet = default, Haiku = fast/cheap){'\n'}</Text>
+      <SelectInput items={[
+        { label: `Yes, assign different models per tier`, value: 'yes' },
+        { label: `No, use ${selectedModel} for all tiers`, value: 'no' },
+      ]} onSelect={(item) => {
+        if (item.value === 'yes') {
+          // Pre-populate from tierDefaults if available
+          if (provider?.tierDefaults) {
+            setOpusModel(provider.tierDefaults.opus);
+            setSonnetModel(provider.tierDefaults.sonnet);
+            setHaikuModel(provider.tierDefaults.haiku);
+          } else {
+            setOpusModel(selectedModel);
+            setSonnetModel(selectedModel);
+            setHaikuModel(selectedModel);
+          }
+          setTierStep('opus');
+          setStep('customize-tiers');
+        } else {
+          setStep('api-key');
+        }
+      }} />
+    </Box>);
+  }
+
+  if (step === 'customize-tiers' && provider) {
+    const modelItems = provider.models.length > 0
+      ? provider.models.map(m => ({ label: m, value: m }))
+      : null;
+
+    const tierLabel = tierStep === 'opus' ? 'Opus (heavy tasks)' : tierStep === 'sonnet' ? 'Sonnet (default)' : 'Haiku (fast/cheap)';
+    const currentValue = tierStep === 'opus' ? opusModel : tierStep === 'sonnet' ? sonnetModel : haikuModel;
+    const setter = tierStep === 'opus' ? setOpusModel : tierStep === 'sonnet' ? setSonnetModel : setHaikuModel;
+    const nextStep = (): void => {
+      if (tierStep === 'opus') setTierStep('sonnet');
+      else if (tierStep === 'sonnet') setTierStep('haiku');
+      else setStep('api-key');
+    };
+
+    if (modelItems) {
+      // Find index of current value for initial highlight
+      const initialIndex = modelItems.findIndex(m => m.value === currentValue);
+      return (<Box flexDirection="column" padding={1}>
+        <Text bold color="cyan">{tierLabel}</Text>
+        <Text dimColor>Current: {currentValue}{'\n'}</Text>
+        <SelectInput items={modelItems} initialIndex={initialIndex >= 0 ? initialIndex : 0} onSelect={(item) => {
+          setter(item.value);
+          nextStep();
+        }} />
+      </Box>);
+    } else {
+      return (<Box padding={1}>
+        <Text bold color="cyan">{tierLabel}: </Text>
+        <TextInput value={inputValue} placeholder={currentValue} onChange={setInputValue} onSubmit={(val) => {
+          setter(val || currentValue);
+          setInputValue('');
+          nextStep();
+        }} />
+      </Box>);
+    }
   }
 
   if (step === 'api-key') {
@@ -121,9 +196,9 @@ function AddApp({ initialName }: { initialName?: string }) {
     return {
       ANTHROPIC_BASE_URL: provider.baseUrl,
       ANTHROPIC_MODEL: model,
-      ANTHROPIC_DEFAULT_SONNET_MODEL: model,
-      ANTHROPIC_DEFAULT_OPUS_MODEL: model,
-      ANTHROPIC_DEFAULT_HAIKU_MODEL: model,
+      ANTHROPIC_DEFAULT_OPUS_MODEL: opusModel || model,
+      ANTHROPIC_DEFAULT_SONNET_MODEL: sonnetModel || model,
+      ANTHROPIC_DEFAULT_HAIKU_MODEL: haikuModel || model,
       API_TIMEOUT_MS: '3000000',
       CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1',
     };
@@ -147,12 +222,16 @@ function AddApp({ initialName }: { initialName?: string }) {
     const editor = process.env.EDITOR || 'vim';
     const tmpFile = path.join(os.tmpdir(), `claude-switch-${Date.now()}.json`);
     const model = selectedModel || '';
+    const defaults = provider?.tierDefaults;
     const profileJson = JSON.stringify({
       name,
       displayName: name.charAt(0).toUpperCase() + name.slice(1),
       provider: name,
       baseUrl: provider?.baseUrl || '',
       model,
+      opusModel: defaults?.opus || model,
+      sonnetModel: defaults?.sonnet || model,
+      haikuModel: defaults?.haiku || model,
       apiKey: '<YOUR_API_KEY>',
       timeout: '3000000',
     }, null, 2);
@@ -165,12 +244,13 @@ function AddApp({ initialName }: { initialName?: string }) {
       if (!parsed.baseUrl) {
         console.error('baseUrl is required. Profile not saved.'); process.exit(1);
       }
+      const baseModel = parsed.model || '';
       const finalEnv: Record<string, string> = {
         ANTHROPIC_BASE_URL: parsed.baseUrl,
-        ANTHROPIC_MODEL: parsed.model || '',
-        ANTHROPIC_DEFAULT_SONNET_MODEL: parsed.model || '',
-        ANTHROPIC_DEFAULT_OPUS_MODEL: parsed.model || '',
-        ANTHROPIC_DEFAULT_HAIKU_MODEL: parsed.model || '',
+        ANTHROPIC_MODEL: baseModel,
+        ANTHROPIC_DEFAULT_OPUS_MODEL: parsed.opusModel || baseModel,
+        ANTHROPIC_DEFAULT_SONNET_MODEL: parsed.sonnetModel || baseModel,
+        ANTHROPIC_DEFAULT_HAIKU_MODEL: parsed.haikuModel || baseModel,
         API_TIMEOUT_MS: parsed.timeout || '3000000',
         CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1',
       };

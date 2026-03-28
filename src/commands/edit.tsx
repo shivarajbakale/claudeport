@@ -8,7 +8,7 @@ import { loadProfile, saveProfile } from '../lib/profiles';
 import { ensureInitialized } from '../lib/init';
 import type { Profile } from '../types';
 
-type EditField = 'menu' | 'base-url' | 'model' | 'api-key' | 'display-name' | 'done';
+type EditField = 'menu' | 'base-url' | 'model' | 'opus-model' | 'sonnet-model' | 'haiku-model' | 'api-key' | 'display-name' | 'done';
 
 function EditApp({ name }: { name: string }) {
   const { exit } = useApp();
@@ -25,7 +25,11 @@ function EditApp({ name }: { name: string }) {
       <Text>{'\n'}What would you like to edit?{'\n'}</Text>
       <SelectInput items={[
         { label: 'Display Name', value: 'display-name' }, { label: 'Base URL', value: 'base-url' },
-        { label: 'Model', value: 'model' }, { label: 'API Key', value: 'api-key' }, { label: 'Done', value: 'done' },
+        { label: 'Model (all tiers)', value: 'model' },
+        { label: `Opus Model (${profile.env.ANTHROPIC_DEFAULT_OPUS_MODEL || '-'})`, value: 'opus-model' },
+        { label: `Sonnet Model (${profile.env.ANTHROPIC_DEFAULT_SONNET_MODEL || '-'})`, value: 'sonnet-model' },
+        { label: `Haiku Model (${profile.env.ANTHROPIC_DEFAULT_HAIKU_MODEL || '-'})`, value: 'haiku-model' },
+        { label: 'API Key', value: 'api-key' }, { label: 'Done', value: 'done' },
       ]} onSelect={(item) => setStep(item.value as EditField)} />
     </Box>);
   }
@@ -42,6 +46,24 @@ function EditApp({ name }: { name: string }) {
   if (step === 'model') {
     return (<Box padding={1}><Text>Model ({profile.env.ANTHROPIC_MODEL}): </Text><TextInput value={inputValue} onChange={setInputValue} onSubmit={(val) => {
       if (val) { const updated = { ...profile, env: { ...profile.env, ANTHROPIC_MODEL: val, ANTHROPIC_DEFAULT_SONNET_MODEL: val, ANTHROPIC_DEFAULT_OPUS_MODEL: val, ANTHROPIC_DEFAULT_HAIKU_MODEL: val } }; saveProfile(updated); setProfile(updated); }
+      setInputValue(''); setStep('menu');
+    }} /></Box>);
+  }
+  if (step === 'opus-model') {
+    return (<Box padding={1}><Text>Opus Model ({profile.env.ANTHROPIC_DEFAULT_OPUS_MODEL}): </Text><TextInput value={inputValue} onChange={setInputValue} onSubmit={(val) => {
+      if (val) { const updated = { ...profile, env: { ...profile.env, ANTHROPIC_DEFAULT_OPUS_MODEL: val } }; saveProfile(updated); setProfile(updated); }
+      setInputValue(''); setStep('menu');
+    }} /></Box>);
+  }
+  if (step === 'sonnet-model') {
+    return (<Box padding={1}><Text>Sonnet Model ({profile.env.ANTHROPIC_DEFAULT_SONNET_MODEL}): </Text><TextInput value={inputValue} onChange={setInputValue} onSubmit={(val) => {
+      if (val) { const updated = { ...profile, env: { ...profile.env, ANTHROPIC_DEFAULT_SONNET_MODEL: val } }; saveProfile(updated); setProfile(updated); }
+      setInputValue(''); setStep('menu');
+    }} /></Box>);
+  }
+  if (step === 'haiku-model') {
+    return (<Box padding={1}><Text>Haiku Model ({profile.env.ANTHROPIC_DEFAULT_HAIKU_MODEL}): </Text><TextInput value={inputValue} onChange={setInputValue} onSubmit={(val) => {
+      if (val) { const updated = { ...profile, env: { ...profile.env, ANTHROPIC_DEFAULT_HAIKU_MODEL: val } }; saveProfile(updated); setProfile(updated); }
       setInputValue(''); setStep('menu');
     }} /></Box>);
   }
