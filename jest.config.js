@@ -7,7 +7,7 @@ module.exports = {
   globals: {
     'ts-jest': {
       tsconfig: {
-        types: ['jest'],
+        types: ['jest', 'node'],
       },
     },
   },
