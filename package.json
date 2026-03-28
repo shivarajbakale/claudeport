@@ -1,11 +1,11 @@
 {
-  "name": "claude-switcher",
+  "name": "claudeport",
   "version": "1.0.0",
-  "description": "CLI tool to switch Claude Code between AI model providers",
+  "description": "Switch Claude Code between AI model providers in one command. Supports DeepSeek, MiniMax, Groq, Moonshot, OpenRouter, and more.",
   "type": "module",
   "main": "dist/cli.js",
   "bin": {
-    "claude-switch": "./bin/claude-switch"
+    "claudeport": "./bin/claude-switch"
   },
   "scripts": {
     "start": "ts-node src/cli.tsx",
@@ -18,7 +18,7 @@
     "dist",
     "bin"
   ],
-  "keywords": ["claude", "claude-code", "ai", "llm", "switcher", "cli"],
+  "keywords": ["claude", "claude-code", "anthropic", "ai", "llm", "cli", "model-switcher", "deepseek", "groq", "moonshot", "openrouter", "minimax", "provider-switcher"],
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^30.0.0",
