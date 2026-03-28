@@ -1,6 +1,6 @@
 {
   "name": "@shivarajbakale/claudeport",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Switch Claude Code between AI model providers in one command. Supports DeepSeek, MiniMax, Groq, Moonshot, OpenRouter, and more.",
   "type": "module",
   "main": "dist/cli.js",
