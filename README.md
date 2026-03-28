@@ -1,31 +1,25 @@
 # claudeport
 
-**Switch Claude Code between AI providers in one command.**
+**One command to switch Claude Code between AI providers.**
 
-Stop hunting through `settings.json`. Stop pasting base URLs from docs. Stop guessing which env var is which. `claudeport` handles the config so you can focus on the actual work.
+No hunting through `settings.json`. No guessing env var names. No restarts.
 
-```bash
-claudeport add deepseek   # add profile
-claudeport deepseek       # switch to it
 ```
-
-> Works with DeepSeek, MiniMax, Groq, Moonshot, OpenRouter, and any Anthropic-compatible endpoint. One command to add, one command to switch.
+claudeport deepseek   # switch instantly
+claudeport            # or pick from a pretty menu
+```
 
 ---
 
-## Why
+## The Problem
 
-Claude Code is excellent — but the right model depends on the task:
+Claude Code is brilliant. But switching models means:
+- Hunting through `settings.json` for the right `env` keys
+- Googling "what's the DeepSeek endpoint again?"
+- Wondering if it was `ANTHROPIC_API_KEY` or `ANTHROPIC_AUTH_TOKEN`
+- Restarting Claude Code for changes to take effect
 
-| Use case | Best fit |
-|----------|----------|
-| General coding | **DeepSeek** — best price/performance |
-| Fast feedback loops | **Groq** — sub-second first token |
-| Long documents / large diffs | **Moonshot** — 128k context |
-| Budget at scale | **MiniMax M2.7** — MoE architecture |
-| Any model on demand | **OpenRouter** — 100+ models |
-
-No switching cost. No commitment. No "which config was I using again?"
+**claudeport** eliminates all of that.
 
 ---
 
@@ -39,90 +33,97 @@ Requires Node.js 18+.
 
 ---
 
-## Add your first profile
+## Quick Start
 
 ```bash
-claudeport add deepseek
-```
-
-- You type `deepseek`
-- `claudeport` auto-fills the endpoint URL and default model
-- You paste your API key
-- Done.
-
-```bash
-# Add more providers
-claudeport add groq
-claudeport add minimax
-claudeport add moonshot
-```
-
----
-
-## Switch instantly
-
-```bash
-claudeport deepseek       # by name
-claudeport                 # or pick from a menu
+claudeport add deepseek  # interactive setup, auto-fills endpoint + model
+claudeport deepseek       # switch to it
 ```
 
 Claude Code picks up the new config immediately. No restart needed.
 
 ---
 
-## Features
+## Interactive Mode
 
-### Named switching
-```bash
-claudeport <name>
+Run `claudeport` without arguments for a visual picker:
+
 ```
-Short. Fast. Tab-completable.
-
-### Interactive menu
-```bash
-claudeport
-```
-Don't remember the profile name? Pick from a list.
-
-### Built-in provider knowledge
-Run `claudeport add <name>` with any known provider name and the correct endpoint and model are pre-filled. No docs hunting.
-
-### Vim editing
-```bash
-claudeport add <name>   # select provider
-# choose "Edit in vim"
-```
-Review and edit the raw JSON config before saving. Useful for custom settings or obscure providers.
-
-### Profile management
-```bash
-claudeport list          # show all profiles
-claudeport remove <name> # delete one
-claudeport edit <name>   # edit one
-claudeport current        # show active profile
-claudeport reset         # restore original settings
+┌─ claudeport ──────────────────────────┐
+│                                     │
+│  ▶  deepseek (deepseek-chat)        │
+│     groq (llama-3.3-70b-versatile)   │
+│     minimax (MiniMax-M2.7)           │
+│     moonshot (moonshot-v1-128k)      │
+│     openrouter (100+ models)         │
+│                                     │
+│     + add new profile                │
+│                                     │
+└─────────────────────────────────────┘
 ```
 
-### Safe and non-destructive
-`claudeport` backs up your original `~/.claude/settings.json` and only touches the `env` keys it needs. Your prompts, keybindings, and other settings stay intact.
+Tab-completable for speed, vim keybindings for navigation.
 
 ---
 
-## Supported providers
+## Why claudeport
+
+Different tasks need different models:
+
+| Use case | Best fit |
+|----------|----------|
+| General coding | **DeepSeek** — best price/performance |
+| Fast feedback | **Groq** — sub-second first token |
+| Long docs/diffs | **Moonshot** — 128k context |
+| Budget at scale | **MiniMax M2.7** — MoE architecture |
+| Any model on demand | **OpenRouter** — 100+ models |
+
+No switching cost. No commitment. Pick the right tool for the job.
+
+---
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `claudeport <name>` | Switch to profile (tab-completable) |
+| `claudeport` | Interactive profile picker |
+| `claudeport add <name>` | Add a new provider profile |
+| `claudeport list` | List all profiles |
+| `claudeport current` | Show active profile |
+| `claudeport edit <name>` | Edit a profile |
+| `claudeport remove <name>` | Delete a profile |
+| `claudeport reset` | Restore original settings |
+
+---
+
+## Supported Providers
 
 | Provider | Endpoint | Models |
 |----------|----------|--------|
-| **DeepSeek** | `https://api.deepseek.com/anthropic` | `deepseek-chat`, `deepseek-reasoner` |
-| **MiniMax** | `https://api.minimax.io/anthropic` | `MiniMax-M2.7` |
-| **Moonshot (Kimi)** | `https://api.moonshot.cn/v1` | `moonshot-v1-8k`, `-32k`, `-128k` |
-| **OpenRouter** | `https://openrouter.ai/api/v1` | 100+ models |
-| **Groq** | `https://api.groq.com/openai/v1` | Llama 3.3, Llama 3.1, Mixtral 8x7B, Gemma 2 |
+| **DeepSeek** | `api.deepseek.com` | `deepseek-chat`, `deepseek-reasoner` |
+| **MiniMax** | `api.minimax.io` | `MiniMax-M2.7` |
+| **Moonshot** | `api.moonshot.cn` | `moonshot-v1-8k`, `-32k`, `-128k` |
+| **OpenRouter** | `openrouter.ai` | 100+ models |
+| **Groq** | `api.groq.com` | Llama 3.3, Llama 3.1, Mixtral, Gemma 2 |
 
-All are verified Anthropic Messages API-compatible. Don't see yours? Adding a new provider is a ~10 line change.
+All verified Anthropic Messages API-compatible. Don't see yours? Adding a new provider is a ~10 line change.
 
 ---
 
-## How it works
+## Safe and Non-Destructive
+
+`claudeport` backs up your original `~/.claude/settings.json` before touching anything. It only modifies the `env` keys it needs — your prompts, keybindings, and other settings stay intact.
+
+```
+~/.claude-switcher/
+├── profiles/       # your saved profiles
+└── base.json       # original settings (backup)
+```
+
+---
+
+## How It Works
 
 Claude Code reads from the `env` block in `~/.claude/settings.json`:
 
@@ -136,7 +137,7 @@ Claude Code reads from the `env` block in `~/.claude/settings.json`:
 }
 ```
 
-`claudeport` stores profiles in `~/.claude-switcher/profiles/`. Activating a profile merges its env into `settings.json`. Your original config is always preserved as a backup.
+`claudeport` stores profiles in `~/.claude-switcher/profiles/`. Activating a profile merges its config into `settings.json`. Your original is always preserved as `base.json`.
 
 ---
 
