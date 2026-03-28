@@ -9,7 +9,6 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
       contents: read
       packages: write
 
@@ -21,6 +20,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@shivarajbakale'
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
         run: npm ci
@@ -28,8 +30,5 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Publish to GitHub Packages
-        run: |
-          echo "@shivarajbakale:registry=https://npm.pkg.github.com" >> .npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
-          npm publish
+      - name: Publish
+        run: npm publish
