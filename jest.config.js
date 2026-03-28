@@ -4,4 +4,11 @@ module.exports = {
   roots: ['<rootDir>/src'],
   testMatch: ['**/*.test.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  globals: {
+    'ts-jest': {
+      tsconfig: {
+        types: ['jest'],
+      },
+    },
+  },
 };
