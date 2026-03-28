@@ -1,18 +1,41 @@
 {
   "name": "claude-switcher",
   "version": "1.0.0",
-  "description": "A project used to switch between different Claude configurations",
-  "main": "dist/index.js",
-  "scripts": {
-    "start": "ts-node src/index.ts",
-    "build": "tsc",
-    "dev": "ts-node-dev --respawn src/index.ts",
-    "test": "jest"
+  "description": "CLI tool to switch Claude Code between AI model providers",
+  "main": "dist/cli.js",
+  "bin": {
+    "claude-switch": "./bin/claude-switch"
   },
+  "scripts": {
+    "start": "ts-node src/cli.tsx",
+    "build": "tsc",
+    "dev": "ts-node-dev --respawn src/cli.tsx",
+    "test": "jest",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "keywords": ["claude", "claude-code", "ai", "llm", "switcher", "cli"],
+  "license": "MIT",
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "jest": "^30.3.0",
+    "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^6.0.2"
+  },
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "commander": "^14.0.3",
+    "ink": "^6.8.0",
+    "ink-select-input": "^6.2.0",
+    "ink-spinner": "^5.0.0",
+    "ink-text-input": "^6.0.0",
+    "react": "^19.2.4"
   }
 }
