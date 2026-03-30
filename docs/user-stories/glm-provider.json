@@ -1,0 +1,13 @@
+[
+  {
+    "description": "Add GLM (ZhipuAI) as a supported provider so users can switch Claude Code to use GLM models via the Z.AI Anthropic-compatible API",
+    "steps": [
+      "Add GLM provider entry to the PROVIDERS array in src/lib/providers.ts with name 'glm', displayName 'GLM (ZhipuAI)', baseUrl 'https://api.z.ai/api/anthropic', models array including glm-5.1, GLM-4.7, GLM-4.5-Air, and docsUrl 'https://docs.z.ai/devpack/tool/claude'",
+      "Add tierDefaults mapping: opus -> glm-5.1, sonnet -> GLM-4.7, haiku -> GLM-4.5-Air",
+      "Run existing provider tests (npm test) and verify they pass with the new provider included",
+      "Verify matchProvider('glm') returns the GLM provider",
+      "Verify listProviders() includes GLM in the results"
+    ],
+    "passes": true
+  }
+]
