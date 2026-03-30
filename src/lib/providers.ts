@@ -48,7 +48,7 @@ const PROVIDERS: Provider[] = [
     name: 'glm',
     displayName: 'GLM (ZhipuAI)',
     baseUrl: 'https://api.z.ai/api/anthropic',
-    models: ['glm-5.1', 'GLM-4.7', 'GLM-4.5-Air'],
+    models: ['glm-5.1', 'GLM-5-Turbo', 'GLM-4.7', 'GLM-4.5-Air'],
     docsUrl: 'https://docs.z.ai/devpack/tool/claude',
     tierDefaults: { opus: 'glm-5.1', sonnet: 'GLM-4.7', haiku: 'GLM-4.5-Air' },
   },
